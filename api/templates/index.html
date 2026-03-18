@@ -819,7 +819,7 @@
             html.setAttribute('data-theme', next);
             localStorage.setItem('gridworld-theme', next);
             // Re-render arrows if in done mode to update border colors
-            if (mode === 'done' && !document.getElementById('evalBtn').disabled && startCell) {
+            if (mode === 'done' && startCell) {
                 // minor visual refresh check
             }
         }
@@ -930,7 +930,6 @@
          *  EVALUATE POLICY
          * ══════════════════════════════════════════════════════════ */
         async function evaluatePolicy() {
-            const btn = document.getElementById('evalBtn');
             const isReEval = mode === 'done';
 
             // ── Client-side pre-flight validation ───────────────────────────
@@ -949,7 +948,6 @@
                 if (obstacles.length > CLIENT_LIMITS.MAX_OBSTACLES)
                     throw new RangeError(`Too many obstacles (max ${CLIENT_LIMITS.MAX_OBSTACLES}).`);
 
-                // Ensure cell coordinates are within grid
                 const cellInBounds = ({ row, col }) => row >= 0 && row < safeN && col >= 0 && col < safeN;
                 if (!cellInBounds(startCell)) throw new RangeError('Start cell is out of bounds.');
                 if (!cellInBounds(endCell)) throw new RangeError('End cell is out of bounds.');
@@ -957,14 +955,8 @@
                     if (!cellInBounds(obs)) throw new RangeError(`Obstacle ${JSON.stringify(obs)} is out of bounds.`);
                 }
             } catch (e) {
-                alert('Validation error: ' + e.message);
+                console.warn('Validation error: ' + e.message);
                 return;
-            }
-
-            // Just for visual loading check if the main eval button was clicked
-            if (!isReEval) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span>Evaluating…';
             }
 
             try {
@@ -983,29 +975,20 @@
                 });
 
                 if (!res.ok) {
-                    // Surface the server's error message instead of a generic one
                     let errMsg = `Server error: ${res.status}`;
                     try {
                         const errBody = await res.json();
                         if (errBody && errBody.error) errMsg = errBody.error;
-                    } catch (_) { /* ignore JSON parse failure */ }
+                    } catch (_) { }
                     throw new Error(errMsg);
                 }
 
                 const data = await res.json();
-
-                // Clear stale path highlights before re-render
                 document.querySelectorAll('#gridTableOpt td.on-path').forEach(td => td.classList.remove('on-path'));
-
                 renderResults(data.opt_cells, 'gridTableOpt', data.opt_path || []);
 
-                btn.innerHTML = 'Evaluate Policy';
-                btn.disabled = true; // Stay disabled after first successful run
-
             } catch (err) {
-                alert('Evaluation failed: ' + err.message);
-                btn.innerHTML = 'Evaluate Policy';
-                btn.disabled = false;
+                console.error('Evaluation failed: ' + err.message);
             }
         }
 
