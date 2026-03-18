@@ -32,24 +32,34 @@ This application provides a visual representation of how the Value Iteration alg
 - **Backend**: Python with Flask
 - **Frontend**: Vanilla JavaScript, HTML5, Modern CSS (Glassmorphism & Flexbox)
 - **Math**: Value Iteration (Bellman Optimality Equation)
+- **Deployment**: Vercel ready
 
-## 🏃 Getting Started
+## 🏃 Getting Started Locally
 
 ### 1. Prerequisites
-Ensure you have Python installed. Install the only dependency:
+Ensure you have Python installed. Install the dependencies:
 ```bash
-pip install flask
+pip install flask gunicorn
 ```
 
 ### 2. Run the Application
 Navigate to the project directory and run:
 ```bash
-python app.py
+python api/index.py
 ```
 
 ### 3. Access the Grid
 Open your browser and go to:
 [http://127.0.0.1:5000](http://127.0.0.1:5000)
+
+## ☁️ Vercel Deployment
+
+This project is optimized for deployment on **Vercel**. 
+
+1.  Push the code to GitHub.
+2.  Import the project into Vercel.
+3.  Vercel will automatically detect the `vercel.json` and `api/index.py` files.
+4.  Standard Python 3 serverless environment is used.
 
 ## 📖 How It Works
 
